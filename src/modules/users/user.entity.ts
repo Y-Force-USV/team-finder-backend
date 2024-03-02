@@ -1,17 +1,11 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Organization } from '../organizations/organization.entity';
 
 export enum UserRole {
-  Admin = 'admin',
-  Employee = 'employee',
-  ProjectManager = 'project-manager',
-  DeploymentManager = 'deployment-manager',
+  ADMIN = 'admin',
+  EMPLOYEE = 'employee',
+  PROJECT_MANAGER = 'project-manager',
+  DEPARTMENT_MANAGER = 'department-manager',
 }
 
 @Entity('users')
@@ -31,6 +25,7 @@ export class User {
   @Column({
     type: 'enum',
     enum: UserRole,
+    default: UserRole.EMPLOYEE,
   })
   role: UserRole;
 

@@ -1,4 +1,7 @@
-import { Entity } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('skills_categories')
-export class SkillCategories {}
+export class SkillCategories {
+  @PrimaryGeneratedColumn()
+  id: number;
+}

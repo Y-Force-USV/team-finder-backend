@@ -21,5 +21,5 @@ export class Organization {
   projects: Project[];
 
   @OneToMany(() => Department, (department) => department.organization)
-  department: Department[];
+  departments: Department[];
 }
