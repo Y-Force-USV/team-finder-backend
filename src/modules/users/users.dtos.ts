@@ -1,4 +1,4 @@
-import { IsEmail, IsString, Max } from 'class-validator';
+import { IsEmail, IsString, IsStrongPassword, Max } from 'class-validator';
 
 export class CreateAdminAndOrgDto {
   @IsString()
@@ -7,7 +7,25 @@ export class CreateAdminAndOrgDto {
   @IsEmail()
   email: string;
 
+  @IsStrongPassword()
   password: string;
+
+  @IsString()
   orgName: string;
+
+  @IsString()
   orgAddress: string;
+}
+
+export class CreateEmployeeDto {
+  @IsString()
+  name: string;
+
+  @IsEmail()
+  email: string;
+
+  @IsStrongPassword()
+  password: string;
+
+  organizationId: number;
 }

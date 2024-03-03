@@ -22,4 +22,8 @@ export class OrganizationsService {
   async findOrganizations() {
     return await this.organizationsRepository.find({ relations: { users: true } });
   }
+
+  async findOrganizationById(id: number): Promise<Organization> {
+    return await this.organizationsRepository.findOneBy({ id });
+  }
 }

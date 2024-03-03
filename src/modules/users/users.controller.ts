@@ -1,10 +1,15 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateAdminAndOrgDto } from './users.dtos';
+import { CreateAdminAndOrgDto, CreateEmployeeDto } from './users.dtos';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
+
+  @Post()
+  async createEmpolyee(@Body() data: CreateEmployeeDto) {
+    return await this.usersService.createEmployee(data);
+  }
 
   @Post('admin')
   async createAdminAndOrg(@Body() data: CreateAdminAndOrgDto) {

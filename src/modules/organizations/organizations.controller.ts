@@ -1,14 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { OrganizationsService } from './organizations.service';
-import { IsString } from 'class-validator';
-
-class CreateOrganizationDto {
-  @IsString()
-  name: string;
-
-  @IsString()
-  address: string;
-}
+import { CreateOrganizationDto } from './organizations.dtos';
 
 @Controller('organizations')
 export class OrganizationsController {

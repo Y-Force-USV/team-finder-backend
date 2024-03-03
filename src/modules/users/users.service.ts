@@ -4,7 +4,7 @@ import { User, UserRole } from './user.entity';
 import { Repository } from 'typeorm';
 import { Organization } from '../organizations/organization.entity';
 import { OrganizationsService } from '../organizations/organizations.service';
-import { CreateAdminAndOrgDto } from './users.dtos';
+import { CreateAdminAndOrgDto, CreateEmployeeDto } from './users.dtos';
 
 @Injectable()
 export class UsersService {
@@ -38,6 +38,20 @@ export class UsersService {
       organization,
     );
     return admin;
+  }
+
+  async createEmployee(data: CreateEmployeeDto) {
+    const organization = await this.organizationsService.findOrganizationById(data.organizationId);
+
+    const employee = await this.createUser(
+      data.name,
+      data.email,
+      data.password,
+      UserRole.EMPLOYEE,
+      organization,
+    );
+
+    return employee;
   }
 
   async findUsers() {
