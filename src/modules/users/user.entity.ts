@@ -1,5 +1,6 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Organization } from '../organizations/organization.entity';
+import { Skill } from '../skills/skill.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -32,4 +33,7 @@ export class User {
   @ManyToOne(() => Organization, (organization) => organization.users)
   @JoinColumn({ name: 'organization_id' })
   organization: Organization;
+
+  @ManyToMany(() => Skill, (skill) => skill.users)
+  skills: Skill[];
 }
