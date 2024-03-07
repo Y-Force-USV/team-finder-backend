@@ -3,8 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Skill } from './skill.entity';
 import { Repository } from 'typeorm';
 import { CreateSkillDto } from './skills.dtos';
-import { User } from '../users/user.entity';
-import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class SkillsService {
