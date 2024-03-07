@@ -13,6 +13,7 @@ export class UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private organizationsService: OrganizationsService,
+    @InjectRepository(Skill)
     private skillRepository: Repository<Skill>,
   ) {}
 

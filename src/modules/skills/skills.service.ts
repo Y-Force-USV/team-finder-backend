@@ -11,8 +11,6 @@ export class SkillsService {
   constructor(
     @InjectRepository(Skill)
     private skillRepository: Repository<Skill>,
-    private usersRepository: Repository<User>,
-    private usersService: UsersService,
   ) {}
 
   async createSkill(data: CreateSkillDto): Promise<Skill> {
@@ -20,6 +18,4 @@ export class SkillsService {
     await this.skillRepository.save(skill);
     return skill;
   }
-
-
 }
