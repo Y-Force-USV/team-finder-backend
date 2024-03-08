@@ -1,4 +1,12 @@
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Organization } from '../organizations/organization.entity';
 import { Skill } from '../skills/skill.entity';
 
@@ -35,5 +43,10 @@ export class User {
   organization: Organization;
 
   @ManyToMany(() => Skill, (skill) => skill.users)
+  @JoinTable({
+    name: 'user_skills',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'skill_id', referencedColumnName: 'id' },
+  })
   skills: Skill[];
 }

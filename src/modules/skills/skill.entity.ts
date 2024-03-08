@@ -10,6 +10,5 @@ export class Skill {
   name: string;
 
   @ManyToMany(() => User, (user) => user.skills)
-  @JoinTable()
   users: User[];
 }

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User, UserRole } from './user.entity';
 import { In, Repository } from 'typeorm';
-import { Organization } from '../organizations/organization.entity';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { CreateAdminAndOrgDto, CreateEmployeeDto } from './users.dtos';
 import { Skill } from '../skills/skill.entity';
@@ -22,7 +21,7 @@ export class UsersService {
     email: string,
     password: string,
     role: UserRole,
-    organization: Organization,
+    organization: any,
   ) {
     const user = await this.usersRepository.save({ name, email, password, role, organization });
     return user;
@@ -79,5 +78,9 @@ export class UsersService {
     user.skills = [...user.skills, ...existingSkills, ...newSkills];
     await this.usersRepository.save(user);
     return user;
+  }
+
+  async updateUserRole(userId: number, newRole: UserRole) {
+    return await this.usersRepository.update(userId, { role: newRole });
   }
 }

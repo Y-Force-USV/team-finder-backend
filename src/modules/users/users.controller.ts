@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateAdminAndOrgDto, CreateEmployeeDto } from './users.dtos';
-import { request } from 'http';
 import { AssignSkillsDto } from '../skills/skills.dtos';
+import { UserRole } from './user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -27,5 +27,10 @@ export class UsersController {
   async assignSkills(@Req() request, @Body() data: AssignSkillsDto) {
     const userId = request.user.id;
     return await this.usersService.assignSkills(userId, data.skills);
+  }
+
+  @Patch(':id/role')
+  async updateUserRole(@Param('id') userId: number, @Body('role') newRole: UserRole) {
+    return this.usersService.updateUserRole(userId, newRole);
   }
 }
