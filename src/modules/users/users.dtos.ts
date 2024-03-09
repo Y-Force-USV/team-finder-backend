@@ -7,7 +7,7 @@ export class CreateAdminAndOrgDto {
   @IsEmail()
   email: string;
 
-  @IsStrongPassword()
+  @IsString()
   password: string;
 
   @IsString()
@@ -24,8 +24,27 @@ export class CreateEmployeeDto {
   @IsEmail()
   email: string;
 
-  @IsStrongPassword()
+  @IsString()
   password: string;
 
   organizationId: number;
+}
+
+export class CreateAdminDto {
+  @IsString()
+  name: string;
+
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  password: string;
+}
+
+export class LoginAdminDto {
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  password: string;
 }

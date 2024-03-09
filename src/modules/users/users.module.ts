@@ -5,6 +5,7 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { OrganizationsModule } from '../organizations/organizations.module';
 import { SkillsModule } from '../skills/skills.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), OrganizationsModule, SkillsModule],

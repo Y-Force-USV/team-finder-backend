@@ -3,8 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User, UserRole } from './user.entity';
 import { In, Repository } from 'typeorm';
 import { OrganizationsService } from '../organizations/organizations.service';
-import { CreateAdminAndOrgDto, CreateEmployeeDto } from './users.dtos';
+import { CreateAdminAndOrgDto, CreateEmployeeDto, LoginAdminDto } from './users.dtos';
 import { Skill } from '../skills/skill.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -23,7 +24,14 @@ export class UsersService {
     role: UserRole,
     organization: any,
   ) {
-    const user = await this.usersRepository.save({ name, email, password, role, organization });
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const user = await this.usersRepository.save({
+      name,
+      email,
+      password: hashedPassword,
+      role,
+      organization,
+    });
     return user;
   }
 
@@ -32,14 +40,35 @@ export class UsersService {
       data.orgName,
       data.orgAddress,
     );
+    const hashedPassword = await bcrypt.hash(data.password, 12);
     const admin = await this.createUser(
       data.name,
       data.email,
-      data.password,
+      hashedPassword,
       UserRole.ADMIN,
       organization,
     );
     return admin;
+  }
+
+  async validateUser(data: LoginAdminDto) {
+    const user = await this.usersRepository.findOne({ where: { email: data.email } });
+
+    console.log('dbuser: ', user);
+    if (!user) {
+      return null;
+    }
+
+    console.log(await bcrypt.hash(data.password, 12));
+    console.log(data.password);
+    const isMatch = await bcrypt.compare(data.password, user.password);
+
+    console.log('isMatch: ', isMatch);
+    if (!isMatch) {
+      return null;
+    }
+
+    return user;
   }
 
   async createEmployee(data: CreateEmployeeDto) {
