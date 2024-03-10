@@ -40,11 +40,10 @@ export class UsersService {
       data.orgName,
       data.orgAddress,
     );
-    const hashedPassword = await bcrypt.hash(data.password, 12);
     const admin = await this.createUser(
       data.name,
       data.email,
-      hashedPassword,
+      data.password,
       UserRole.ADMIN,
       organization,
     );
