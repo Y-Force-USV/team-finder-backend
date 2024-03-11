@@ -6,7 +6,6 @@ import { OrganizationsService } from '../organizations/organizations.service';
 import { CreateAdminAndOrgDto, CreateEmployeeDto, LoginAdminDto } from './users.dtos';
 import { Skill } from '../skills/skill.entity';
 import * as bcrypt from 'bcrypt';
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -50,26 +49,6 @@ export class UsersService {
     return admin;
   }
 
-  async validateUser(data: LoginAdminDto) {
-    const user = await this.usersRepository.findOne({ where: { email: data.email } });
-
-    console.log('dbuser: ', user);
-    if (!user) {
-      return null;
-    }
-
-    console.log(await bcrypt.hash(data.password, 12));
-    console.log(data.password);
-    const isMatch = await bcrypt.compare(data.password, user.password);
-
-    console.log('isMatch: ', isMatch);
-    if (!isMatch) {
-      return null;
-    }
-
-    return user;
-  }
-
   async createEmployee(data: CreateEmployeeDto) {
     const organization = await this.organizationsService.findOrganizationById(data.organizationId);
 
@@ -110,5 +89,12 @@ export class UsersService {
 
   async updateUserRole(userId: number, newRole: UserRole) {
     return await this.usersRepository.update(userId, { role: newRole });
+  }
+
+  async assignUserRole(userId: number, role: UserRole) {
+    const user = await this.usersRepository.findOneBy({ id: userId });
+
+    user.role = role;
+    return await this.usersRepository.save(user);
   }
 }
