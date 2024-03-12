@@ -1,19 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User, UserRole } from './user.entity';
 import { In, Repository } from 'typeorm';
 import { OrganizationsService } from '../organizations/organizations.service';
-import { CreateAdminAndOrgDto, CreateEmployeeDto, LoginAdminDto } from './users.dtos';
+import { CreateAdminAndOrgDto, CreateEmployeeDto, FindUserByIdAndRoleDto } from './users.dtos';
 import { Skill } from '../skills/skill.entity';
 import * as bcrypt from 'bcrypt';
+import { SkillsService } from '../skills/skills.service';
+import { use } from 'passport';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private organizationsService: OrganizationsService,
-    @InjectRepository(Skill)
-    private skillRepository: Repository<Skill>,
+    private skillsService: SkillsService,
   ) {}
 
   async createUser(
@@ -67,26 +68,6 @@ export class UsersService {
     return await this.usersRepository.find({ relations: { organization: true } });
   }
 
-  async assignSkills(userId: number, skillNames: string[]) {
-    const user = await this.usersRepository.findOne({
-      where: { id: userId },
-      relations: ['skills'],
-    });
-
-    const existingSkills = await this.skillRepository.find({ where: { name: In(skillNames) } });
-
-    const newSkillNames = skillNames.filter(
-      (name) => !existingSkills.find((skill) => skill.name === name),
-    );
-    const newSkills = this.skillRepository.create(newSkillNames.map((name) => ({ name })));
-
-    await this.skillRepository.save(newSkills);
-
-    user.skills = [...user.skills, ...existingSkills, ...newSkills];
-    await this.usersRepository.save(user);
-    return user;
-  }
-
   async updateUserRole(userId: number, newRole: UserRole) {
     return await this.usersRepository.update(userId, { role: newRole });
   }
@@ -96,5 +77,33 @@ export class UsersService {
 
     user.role = role;
     return await this.usersRepository.save(user);
+  }
+
+  async findUserByIdAndRole(data: FindUserByIdAndRoleDto) {
+    return await this.usersRepository.findOne({
+      where: {
+        id: data.userId,
+        role: data.role,
+        organization: { id: data.organizationId },
+      },
+      relations: ['organization'],
+    });
+  }
+
+  async updateUserSkills(userId: number, skill: Skill[]) {
+    const user = await this.usersRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['skills'],
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    user.skills = skill;
+    await this.usersRepository.save(user);
+    return user;
   }
 }
