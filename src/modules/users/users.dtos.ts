@@ -1,4 +1,5 @@
-import { IsEmail, IsString, IsStrongPassword, Max } from 'class-validator';
+import { IsEmail, IsNumber, IsString, IsStrongPassword, Max } from 'class-validator';
+import { UserRole } from './user.entity';
 
 export class CreateAdminAndOrgDto {
   @IsString()
@@ -47,4 +48,15 @@ export class LoginAdminDto {
 
   @IsString()
   password: string;
+}
+
+export class FindUserByIdAndRoleDto {
+  @IsNumber()
+  userId: number;
+
+  @IsString()
+  role: UserRole;
+
+  @IsNumber()
+  organizationId: number;
 }

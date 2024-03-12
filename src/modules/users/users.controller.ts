@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { CreateAdminAndOrgDto, CreateEmployeeDto } from './users.dtos';
 import { AssignSkillsDto } from '../skills/skills.dtos';
 import { UserRole } from './user.entity';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @Controller('users')
 export class UsersController {
@@ -21,12 +22,6 @@ export class UsersController {
   @Post('admin')
   async createAdminAndOrg(@Body() data: CreateAdminAndOrgDto) {
     return await this.usersService.createAdminAndOrg(data);
-  }
-
-  @Post('assign-skills')
-  async assignSkills(@Req() request, @Body() data: AssignSkillsDto) {
-    const userId = request.user.id;
-    return await this.usersService.assignSkills(userId, data.skills);
   }
 
   @Patch(':id/role')
