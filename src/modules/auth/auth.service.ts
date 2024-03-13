@@ -16,7 +16,7 @@ export class AuthService {
 
   async generateJWT(user: User) {
     const playload = { username: user.email, sub: user.id, role: user.role };
-    return await this.jwtService.sign(playload);
+    return this.jwtService.sign(playload);
   }
 
   async validateUser(data: LoginAdminDto) {

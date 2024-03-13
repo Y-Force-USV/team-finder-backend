@@ -1,5 +1,4 @@
 import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
 import { LoginAdminDto } from '../users/users.dtos';
 import { AuthService } from './auth.service';
 
@@ -15,6 +14,6 @@ export class AuthController {
       throw new UnauthorizedException('Invalid credentials');
     }
     const token = await this.authService.generateJWT(user);
-    return { access_token: token };
+    return { accesToken: token };
   }
 }
