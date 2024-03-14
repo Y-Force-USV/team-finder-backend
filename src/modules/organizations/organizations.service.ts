@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Organization } from './organization.entity';
 import { Repository } from 'typeorm';
-import { Department } from '../departments/department.entity';
 
 @Injectable()
 export class OrganizationsService {
@@ -23,7 +22,7 @@ export class OrganizationsService {
     return await this.organizationsRepository.find({ relations: { users: true } });
   }
 
-  async findOrganizationById(id: number): Promise<Organization> {
+  async findOrganizationById(id: number) {
     return await this.organizationsRepository.findOneBy({ id });
   }
 }
