@@ -106,4 +106,8 @@ export class UsersService {
     await this.usersRepository.save(user);
     return user;
   }
+
+  async findUserById(userId: number) {
+    return await this.usersRepository.findOneBy({ id: userId });
+  }
 }

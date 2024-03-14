@@ -5,10 +5,12 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Organization } from '../organizations/organization.entity';
 import { Skill } from '../skills/skill.entity';
+import { Project } from '../projects/project.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -49,4 +51,7 @@ export class User {
     inverseJoinColumn: { name: 'skill_id', referencedColumnName: 'id' },
   })
   skills: Skill[];
+
+  @OneToMany(() => Project, (project) => project.projectManager)
+  projects: Project[];
 }
