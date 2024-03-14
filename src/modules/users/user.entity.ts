@@ -11,6 +11,7 @@ import {
 import { Organization } from '../organizations/organization.entity';
 import { Skill } from '../skills/skill.entity';
 import { Project } from '../projects/project.entity';
+import { Department } from '../departments/department.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -54,4 +55,7 @@ export class User {
 
   @OneToMany(() => Project, (project) => project.projectManager)
   projects: Project[];
+
+  @ManyToOne(() => Department, (department) => department.members)
+  department: Department;
 }

@@ -6,15 +6,12 @@ import { OrganizationsService } from '../organizations/organizations.service';
 import { CreateAdminAndOrgDto, CreateEmployeeDto, FindUserByIdAndRoleDto } from './users.dtos';
 import { Skill } from '../skills/skill.entity';
 import * as bcrypt from 'bcrypt';
-import { SkillsService } from '../skills/skills.service';
-import { use } from 'passport';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private organizationsService: OrganizationsService,
-    private skillsService: SkillsService,
   ) {}
 
   async createUser(
@@ -109,5 +106,9 @@ export class UsersService {
 
   async findUserById(userId: number) {
     return await this.usersRepository.findOneBy({ id: userId });
+  }
+
+  async findUserByEmail(email: string) {
+    return await this.usersRepository.findOneBy({ email });
   }
 }
