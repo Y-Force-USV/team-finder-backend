@@ -1,67 +1,99 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Skill } from './skill.entity';
 import { In, Repository } from 'typeorm';
-import { CreateSkillDto } from './skills.dtos';
-import { SkillCategory } from '../skill-category/skill-category.entity';
-import { CreateSkillCategoryDto } from '../skill-category/skill-category.dtos';
+import { CreateSkillDto, UpdateSkillDto } from './skills.dtos';
 import { DepartmentsService } from '../departments/departments.service';
-import { OrganizationsService } from '../organizations/organizations.service';
 import { UsersService } from '../users/users.service';
+import { UserRole } from '../users/user.entity';
+import { SkillsCategoryService } from '../skill-category/skills-category.service';
 
 @Injectable()
 export class SkillsService {
   constructor(
     @InjectRepository(Skill)
     private skillRepository: Repository<Skill>,
+    private skillsCategoryService: SkillsCategoryService,
     private departmentsService: DepartmentsService,
-    private organizationsService: OrganizationsService,
     private usersService: UsersService,
-    @InjectRepository(SkillCategory)
-    private skillCategoryRepository: Repository<SkillCategory>,
   ) {}
 
-  async createSkill(data: CreateSkillDto): Promise<Skill> {
-    const skill = this.skillRepository.create(data);
-    if (data.departmentId) {
-      const department = await this.departmentsService.findDepartmentById(data.departmentId);
-      if (!department) {
-        throw new NotFoundException('Department not found');
-      }
-      skill.department = department;
+  async createSkill(userId: number, data: CreateSkillDto): Promise<Skill> {
+    const user = await this.usersService.findUserById(userId);
+    if (!user || user.role !== UserRole.DEPARTMENT_MANAGER) {
+      throw new UnauthorizedException('Only department managers can create skills.');
     }
+
+    const category = await this.skillsCategoryService.findSkillCategoryById(data.categoryId);
+    if (!category) {
+      throw new NotFoundException('Skill category not found.');
+    }
+
+    const skill = this.skillRepository.create({
+      ...data,
+      users: user,
+      category,
+    });
     await this.skillRepository.save(skill);
     return skill;
   }
 
-  async addSkillToDepartment(data: CreateSkillDto) {
-    const department = await this.departmentsService.findDepartmentById(data.departmentId);
-    if (!department) {
-      throw new NotFoundException('Department not found.');
+  async addSkillToDepartment(userId: number, skillId: number, departmentId: number) {
+    const user = await this.usersService.findUserById(userId);
+    if (!user || user.role !== UserRole.DEPARTMENT_MANAGER) {
+      throw new UnauthorizedException('Only department manager can add skills to department.');
     }
-    let skill = await this.skillRepository.findOne({
-      where: { name: data.name, department: null },
+
+    const skill = await this.skillRepository.findOne({
+      where: { id: skillId },
+      relations: ['departments'],
     });
     if (!skill) {
-      skill = this.skillRepository.create({ name: data.name });
+      throw new NotFoundException('Skill not found');
     }
-    skill.department = department;
+
+    const existingAssociation = skill.departments.find((dep) => dep.id === departmentId);
+    if (existingAssociation) {
+      const department = await this.departmentsService.findDepartmentById(departmentId);
+      if (!department) {
+        throw new NotFoundException('Department not found.');
+      }
+      skill.departments = [...skill.departments, department];
+      await this.skillRepository.save(skill);
+    }
+    return skill;
+  }
+
+  async updateSkill(userId: number, skillId: number, updateData: UpdateSkillDto) {
+    const skill = await this.skillRepository.findOne({
+      where: { id: skillId },
+      relations: ['author'],
+    });
+    if (!skill) {
+      throw new NotFoundException('Skill not found.');
+    }
+    if (skill.users.id !== userId) {
+      throw new UnauthorizedException('You can only update skills you have created.');
+    }
+
+    Object.assign(skill, updateData);
     await this.skillRepository.save(skill);
     return skill;
   }
 
-  async createSkillCategory(data: CreateSkillCategoryDto) {
-    const organization = await this.organizationsService.findOrganizationById(data.organizationId);
-    if (!organization) {
-      throw new NotFoundException('Organization not found.');
+  async deleteSkill(userId: number, skillId: number) {
+    const skill = await this.skillRepository.findOne({
+      where: { id: skillId },
+      relations: ['author'],
+    });
+    if (!skill) {
+      throw new NotFoundException('Skill not found.');
+    }
+    if (skill.users.id !== userId) {
+      throw new UnauthorizedException('You can only delete skils you have created');
     }
 
-    const skillCategory = this.skillCategoryRepository.create({
-      category_name: data.categoryName,
-      organization,
-    });
-
-    return await this.skillCategoryRepository.save(skillCategory);
+    await this.skillRepository.remove(skill);
   }
 
   async assignSkills(userId: number, skillNames: string[]) {
