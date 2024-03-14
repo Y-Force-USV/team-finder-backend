@@ -7,6 +7,7 @@ import { UserRole } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { FindUserByIdAndRoleDto } from '../users/users.dtos';
+import { markAsUntransferable } from 'worker_threads';
 
 @Injectable()
 export class DepartmentsService {
@@ -84,5 +85,57 @@ export class DepartmentsService {
       throw new UnauthorizedException('You do not have permission to delete this department.');
     }
     await this.departmentRepository.remove(department);
+  }
+
+  async assignDepartmentManager(departmentId: number, managerUserId: number, organizationId) {
+    const manager = await this.usersService.findUserByIdAndRole({
+      userId: managerUserId,
+      role: UserRole.DEPARTMENT_MANAGER,
+      organizationId: organizationId,
+    });
+    if (!manager) {
+      throw new NotFoundException('Manager with given ID not found or not a department manager.');
+    }
+    const department = await this.departmentRepository.findOneBy({ id: departmentId });
+    if (!department) {
+      throw new NotFoundException('Department not found.');
+    }
+
+    department.manager = manager;
+    await this.departmentRepository.save(department);
+    return department;
+  }
+
+  async addMemberToDepartmetnt(departmentId: number, userId: number) {
+    const user = await this.usersService.findUserById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const department = await this.departmentRepository.findOne({
+      where: { id: departmentId },
+      relations: ['members'],
+    });
+
+    if (!department) {
+      throw new NotFoundException('Department not found');
+    }
+
+    department.members.push(user);
+    await this.departmentRepository.save(department);
+    return department;
+  }
+
+  async removeMemberFromDepartment(departmentId: number, userId: number) {
+    const department = await this.departmentRepository.findOne({
+      where: { id: departmentId },
+      relations: ['members'],
+    });
+    if (!department) {
+      throw new NotFoundException('Department not found.');
+    }
+    department.members = department.members.filter((member) => member.id !== userId);
+    await this.departmentRepository.save(department);
+    return department;
   }
 }
