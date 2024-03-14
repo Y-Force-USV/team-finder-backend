@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/co
 import { InjectRepository } from '@nestjs/typeorm';
 import { Department } from './department.entity';
 import { Repository } from 'typeorm';
-import { CreateDepartmentDto } from './departments.dtos';
+import { CreateDepartmentDto, UpdateDepartmentByAdminDto } from './departments.dtos';
 import { UserRole } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { OrganizationsService } from '../organizations/organizations.service';
@@ -46,5 +46,43 @@ export class DepartmentsService {
       throw new NotFoundException('Department not found.');
     }
     return department;
+  }
+
+  async updateDepartment(data: UpdateDepartmentByAdminDto) {
+    const { adminUserId, departmentId, name } = data;
+
+    const department = await this.departmentRepository.findOneBy({ id: departmentId });
+    if (!department) {
+      throw new NotFoundException('Department not found.');
+    }
+    const adminUser = await this.usersService.findUserByIdAndRole({
+      userId: adminUserId,
+      role: UserRole.ADMIN,
+      organizationId: department.organization.id,
+    });
+    if (!adminUser) {
+      throw new UnauthorizedException('You do not have permission to update this department.');
+    }
+
+    if (name) department.name = name;
+    await this.departmentRepository.save(department);
+    return department;
+  }
+
+  async deleteDepartament(adminUserId: number, departmentId: number) {
+    const department = await this.departmentRepository.findOneBy({ id: departmentId });
+    if (!department) {
+      throw new NotFoundException('Department not found.');
+    }
+
+    const adminUser = await this.usersService.findUserByIdAndRole({
+      userId: adminUserId,
+      role: UserRole.ADMIN,
+      organizationId: department.organization.id,
+    });
+    if (!adminUser) {
+      throw new UnauthorizedException('You do not have permission to delete this department.');
+    }
+    await this.departmentRepository.remove(department);
   }
 }
