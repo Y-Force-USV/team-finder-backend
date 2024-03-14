@@ -2,6 +2,7 @@ import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColum
 import { User } from '../users/user.entity';
 import { Department } from '../departments/department.entity';
 import { Organization } from '../organizations/organization.entity';
+import { SkillCategory } from '../skill-category/skill-category.entity';
 
 @Entity('skills')
 export class Skill {
@@ -11,12 +12,25 @@ export class Skill {
   @Column()
   name: string;
 
-  @ManyToMany(() => User, (user) => user.skills)
-  users: User[];
+  @Column({ nullable: true })
+  description: string;
 
-  @ManyToOne(() => Department, (department) => department.skills)
-  department: Department;
+  @ManyToOne(() => SkillCategory, (category) => category.skills, { eager: true })
+  category: SkillCategory;
 
-  @ManyToOne(() => Organization, (organization) => organization.skillCategory)
+  @ManyToMany(() => User)
+  @JoinTable({ name: 'author_id' })
+  users: User;
+
+  @ManyToMany(() => Department, (department) => department.skills)
+  @JoinTable({
+    name: 'department_skills',
+    joinColumn: { name: 'skill_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'department_id', referencedColumnName: 'id' },
+  })
+  departments: Department[];
+
+  @ManyToOne(() => Organization)
+  @JoinTable({ name: 'organization_id' })
   organization: Organization;
 }
