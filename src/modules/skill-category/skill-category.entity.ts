@@ -1,14 +1,18 @@
-import { Column, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Organization } from '../organizations/organization.entity';
+import { Skill } from '../skills/skill.entity';
 
 @Entity('skills-categories')
 export class SkillCategory {
   @PrimaryGeneratedColumn()
-  category_id: number;
+  id: number;
 
   @Column()
-  category_name: string;
+  name: string;
 
   @ManyToOne(() => Organization, (organization) => organization.skillCategory)
   organization: Organization;
+
+  @OneToMany(() => Skill, (skill) => skill.category)
+  skills: Skill[];
 }
