@@ -6,6 +6,8 @@ import { OrganizationsModule } from './modules/organizations/organizations.modul
 import { SkillsModule } from './modules/skills/skills.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DepartmentsModule } from './modules/departments/departments.module';
+import { ProjectsModule } from './modules/projects/projects.module';
+import { SkillsCategoryModule } from './modules/skill-category/skills-category.module';
 
 @Module({
   imports: [
@@ -13,8 +15,10 @@ import { DepartmentsModule } from './modules/departments/departments.module';
     UsersModule,
     OrganizationsModule,
     SkillsModule,
+    SkillsCategoryModule,
     AuthModule,
     DepartmentsModule,
+    ProjectsModule,
   ],
   controllers: [],
   providers: [],

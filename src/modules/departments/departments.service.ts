@@ -7,13 +7,12 @@ import { UserRole } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { FindUserByIdAndRoleDto } from '../users/users.dtos';
-import { markAsUntransferable } from 'worker_threads';
 
 @Injectable()
 export class DepartmentsService {
   constructor(
     @InjectRepository(Department)
-    private departmentRepository: Repository<Department>,
+    private departmentsRepository: Repository<Department>,
     private usersService: UsersService,
     private organizationsService: OrganizationsService,
   ) {}
@@ -34,15 +33,15 @@ export class DepartmentsService {
       throw Error('Organization not found.');
     }
 
-    const department = this.departmentRepository.create({
+    const department = this.departmentsRepository.create({
       name: data.name,
       organization,
     });
-    return await this.departmentRepository.save(department);
+    return await this.departmentsRepository.save(department);
   }
 
   async findDepartmentById(id: number) {
-    const department = await this.departmentRepository.findOneBy({ id });
+    const department = await this.departmentsRepository.findOneBy({ id });
     if (!department) {
       throw new NotFoundException('Department not found.');
     }
@@ -52,7 +51,7 @@ export class DepartmentsService {
   async updateDepartment(data: UpdateDepartmentByAdminDto) {
     const { adminUserId, departmentId, name } = data;
 
-    const department = await this.departmentRepository.findOneBy({ id: departmentId });
+    const department = await this.departmentsRepository.findOneBy({ id: departmentId });
     if (!department) {
       throw new NotFoundException('Department not found.');
     }
@@ -66,12 +65,12 @@ export class DepartmentsService {
     }
 
     if (name) department.name = name;
-    await this.departmentRepository.save(department);
+    await this.departmentsRepository.save(department);
     return department;
   }
 
   async deleteDepartament(adminUserId: number, departmentId: number) {
-    const department = await this.departmentRepository.findOneBy({ id: departmentId });
+    const department = await this.departmentsRepository.findOneBy({ id: departmentId });
     if (!department) {
       throw new NotFoundException('Department not found.');
     }
@@ -84,7 +83,7 @@ export class DepartmentsService {
     if (!adminUser) {
       throw new UnauthorizedException('You do not have permission to delete this department.');
     }
-    await this.departmentRepository.remove(department);
+    await this.departmentsRepository.remove(department);
   }
 
   async assignDepartmentManager(departmentId: number, managerUserId: number, organizationId) {
@@ -96,13 +95,13 @@ export class DepartmentsService {
     if (!manager) {
       throw new NotFoundException('Manager with given ID not found or not a department manager.');
     }
-    const department = await this.departmentRepository.findOneBy({ id: departmentId });
+    const department = await this.departmentsRepository.findOneBy({ id: departmentId });
     if (!department) {
       throw new NotFoundException('Department not found.');
     }
 
     department.manager = manager;
-    await this.departmentRepository.save(department);
+    await this.departmentsRepository.save(department);
     return department;
   }
 
@@ -112,7 +111,7 @@ export class DepartmentsService {
       throw new NotFoundException('User not found');
     }
 
-    const department = await this.departmentRepository.findOne({
+    const department = await this.departmentsRepository.findOne({
       where: { id: departmentId },
       relations: ['members'],
     });
@@ -122,12 +121,12 @@ export class DepartmentsService {
     }
 
     department.members.push(user);
-    await this.departmentRepository.save(department);
+    await this.departmentsRepository.save(department);
     return department;
   }
 
   async removeMemberFromDepartment(departmentId: number, userId: number) {
-    const department = await this.departmentRepository.findOne({
+    const department = await this.departmentsRepository.findOne({
       where: { id: departmentId },
       relations: ['members'],
     });
@@ -135,7 +134,7 @@ export class DepartmentsService {
       throw new NotFoundException('Department not found.');
     }
     department.members = department.members.filter((member) => member.id !== userId);
-    await this.departmentRepository.save(department);
+    await this.departmentsRepository.save(department);
     return department;
   }
 }

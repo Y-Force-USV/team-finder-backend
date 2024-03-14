@@ -5,13 +5,13 @@ import { LoginAdminDto } from '../users/users.dtos';
 import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private usersService: UsersService,
   ) {}
 
   async generateJWT(user: User) {
@@ -20,7 +20,7 @@ export class AuthService {
   }
 
   async validateUser(data: LoginAdminDto) {
-    const user = await this.userRepository.findOne({ where: { email: data.email } });
+    const user = await this.usersService.findUserByEmail(data.email);
 
     console.log('dbuser: ', user);
     if (!user) {

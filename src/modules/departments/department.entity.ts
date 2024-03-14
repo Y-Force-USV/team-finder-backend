@@ -29,11 +29,6 @@ export class Department {
   @JoinColumn({ name: 'department_manager_id' })
   manager: User;
 
-  @ManyToOne(() => User)
-  @JoinTable({
-    name: 'department_members',
-    joinColumn: { name: 'department_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' },
-  })
+  @OneToMany(() => User, (user) => user.department)
   members: User[];
 }
