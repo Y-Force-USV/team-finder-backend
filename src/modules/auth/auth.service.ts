@@ -1,10 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/user.entity';
-import { LoginAdminDto } from '../users/users.dtos';
+import { CreateAdminAndOrgDto, CreateEmployeeDto, LoginAdminDto } from '../users/users.dtos';
 import * as bcrypt from 'bcrypt';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -15,24 +13,43 @@ export class AuthService {
   ) {}
 
   async generateJWT(user: User) {
-    const playload = { username: user.email, sub: user.id, role: user.role };
-    return this.jwtService.sign(playload);
+    const payload = { id: user.id, role: user.role };
+    console.log(process.env.JWT_SECRET_KEY);
+    return await this.jwtService.signAsync(payload, { secret: process.env.JWT_SECRET_KEY });
   }
 
   async validateUser(data: LoginAdminDto) {
     const user = await this.usersService.findUserByEmail(data.email);
-
-    console.log('dbuser: ', user);
-    if (!user) {
-      return null;
-    }
+    if (!user) return null;
 
     const isMatch = await bcrypt.compare(data.password, user.password);
-
-    if (!isMatch) {
-      return null;
-    }
+    if (!isMatch) return null;
 
     return user;
+  }
+
+  async createAdminAndOrg(data: CreateAdminAndOrgDto) {
+    const adminOrg = await this.usersService.createAdminAndOrg(data);
+    if (!adminOrg) throw new UnauthorizedException('Invalid credentials');
+
+    const token = await this.generateJWT(adminOrg);
+    return { accesToken: token };
+  }
+
+  async createEmployee(data: CreateEmployeeDto, organizationId: number) {
+    data.organizationId = organizationId;
+    const employee = await this.usersService.createEmployee(data);
+    if (!employee) throw new UnauthorizedException('Invalid credentials');
+
+    const token = await this.generateJWT(employee);
+    return { accesToken: token };
+  }
+
+  async login(data: LoginAdminDto) {
+    const user = await this.validateUser(data);
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+
+    const token = await this.generateJWT(user);
+    return { accesToken: token };
   }
 }
