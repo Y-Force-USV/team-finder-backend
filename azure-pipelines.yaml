@@ -33,4 +33,4 @@ steps:
       appName: "atc-2024-y-force-be-linux-web-app"
       runtimeStack: 'NODE|20.x'
       package: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-      startUpCommand: 'npm run start:prod'
+      startUpCommand: 'pm2 start dist/main.js --no-daemon'
