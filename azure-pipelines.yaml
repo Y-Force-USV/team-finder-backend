@@ -12,8 +12,9 @@ steps:
 
   - script: |
       npm install
+      npm run build
     workingDirectory: $(projectRoot)
-    displayName: "Install dependencies"
+    displayName: "Install dependencies and build project"
   
   - task: ArchiveFiles@2
     displayName: 'Archive files'
@@ -32,4 +33,4 @@ steps:
       appName: "atc-2024-y-force-be-linux-web-app"
       runtimeStack: 'NODE|20.x'
       package: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-      startUpCommand: 'npm start'
+      startUpCommand: 'npm run start:prod'
