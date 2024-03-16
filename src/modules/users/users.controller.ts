@@ -21,11 +21,4 @@ export class UsersController {
   async updateUserRole(@Param('id') userId: number, @Body('role') newRole: UserRole) {
     return this.usersService.updateUserRole(userId, newRole);
   }
-
-  @Post('search-available')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @HasRoles(UserRole.PROJECT_MANAGER)
-  async searchAvailableEmployees(@Body() searchEmployeesDto: SearchEmployeesDto) {
-    return await this.usersService.searchAvailableEmployees(searchEmployeesDto);
-  }
 }
