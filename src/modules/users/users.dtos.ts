@@ -1,4 +1,4 @@
-import { IsEmail, IsNumber, IsString, IsStrongPassword, Max } from 'class-validator';
+import { IsBoolean, IsEmail, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { UserRole } from './user.entity';
 
 export class CreateAdminAndOrgDto {
@@ -28,7 +28,8 @@ export class CreateEmployeeDto {
   @IsString()
   password: string;
 
-  organizationId: number;
+  @IsOptional()
+  organizationId?: number;
 }
 
 export class CreateAdminDto {
@@ -59,4 +60,38 @@ export class FindUserByIdAndRoleDto {
 
   @IsNumber()
   organizationId: number;
+}
+
+export class SearchEmployeesDto {
+  @IsOptional()
+  @IsBoolean()
+  includePartiallyAvailable: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  includeProjectsCloseToFinish: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(2)
+  @Max(6)
+  weeksUntilDeadline: number;
+
+  @IsOptional()
+  @IsBoolean()
+  includeUnavailableEmployees: boolean;
+
+  @IsOptional()
+  technologyStack: string[];
+}
+
+export class ProjectDisplayDto {
+  @IsString()
+  name: string;
+
+  @IsString()
+  roles: string[];
+
+  @IsString()
+  technologyStack: string[];
 }
