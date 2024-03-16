@@ -50,6 +50,10 @@ export class AuthService {
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
     const token = await this.generateJWT(user);
-    return { accesToken: token };
+    return {
+      accesToken: token,
+      organizationName: user.organization.name,
+      organizationAdmin: user.name,
+    };
   }
 }

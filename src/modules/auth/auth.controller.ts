@@ -1,26 +1,10 @@
-import {
-  Body,
-  Controller,
-  Param,
-  ParseIntPipe,
-  Post,
-  UnauthorizedException,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { CreateAdminAndOrgDto, CreateEmployeeDto, LoginAdminDto } from '../users/users.dtos';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './guards/jwt.guard';
-import { RolesGuard } from './guards/roles.guard';
-import { HasRoles } from './decorators/roles.decorator';
-import { UserRole } from '../users/user.entity';
-import { UsersService } from '../users/users.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private usersService: UsersService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @Post('register')
   async createAdminAndOrg(@Body() data: CreateAdminAndOrgDto) {
