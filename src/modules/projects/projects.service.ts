@@ -2,7 +2,6 @@ import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/co
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project, ProjectStatus } from './project.entity';
 import { Repository } from 'typeorm';
-import { OrganizationsService } from '../organizations/organizations.service';
 import { CreateProjectDto, UpdateProjectDto } from './projects.dtos';
 import { UsersService } from '../users/users.service';
 import { UserRole } from '../users/user.entity';
@@ -65,5 +64,9 @@ export class ProjectsService {
       throw new UnauthorizedException('Project cannot be deleted in its current state.');
     }
     await this.projectRepository.remove(project);
+  }
+
+  async findProjectById(projectId: number) {
+    return await this.projectRepository.findOneBy({ id: projectId });
   }
 }
