@@ -4,7 +4,6 @@ import { UserRole } from './user.entity';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { HasRoles } from '../auth/decorators/roles.decorator';
-import { SearchEmployeesDto } from './users.dtos';
 
 @Controller('users')
 export class UsersController {

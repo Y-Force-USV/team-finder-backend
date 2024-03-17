@@ -3,13 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User, UserRole } from './user.entity';
 import { In, Repository } from 'typeorm';
 import { OrganizationsService } from '../organizations/organizations.service';
-import {
-  CreateAdminAndOrgDto,
-  CreateEmployeeDto,
-  FindUserByIdAndRoleDto,
-  ProjectDisplayDto,
-  SearchEmployeesDto,
-} from './users.dtos';
+import { CreateAdminAndOrgDto, CreateEmployeeDto, FindUserByIdAndRoleDto } from './users.dtos';
 import { Skill } from '../skills/skill.entity';
 import * as bcrypt from 'bcrypt';
 @Injectable()
