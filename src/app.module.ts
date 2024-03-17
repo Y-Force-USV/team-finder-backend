@@ -8,7 +8,6 @@ import { AuthModule } from './modules/auth/auth.module';
 import { DepartmentsModule } from './modules/departments/departments.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { SkillsCategoryModule } from './modules/skill-category/skills-category.module';
-import { InvitationModule } from './modules/invitation/invitation.module';
 
 @Module({
   imports: [
@@ -20,7 +19,6 @@ import { InvitationModule } from './modules/invitation/invitation.module';
     AuthModule,
     DepartmentsModule,
     ProjectsModule,
-    InvitationModule,
   ],
   controllers: [],
   providers: [],

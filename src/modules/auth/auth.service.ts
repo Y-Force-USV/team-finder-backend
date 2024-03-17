@@ -51,9 +51,10 @@ export class AuthService {
 
     const token = await this.generateJWT(user);
     return {
-      accesToken: token,
+      accessToken: token,
       organizationName: user.organization.name,
       organizationAdmin: user.name,
+      organizationId: user.organization.id,
     };
   }
 }

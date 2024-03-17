@@ -104,8 +104,11 @@ export class UsersService {
     return user;
   }
 
-  async findUserById(userId: number) {
-    return await this.usersRepository.findOneBy({ id: userId });
+  async findUserById(userId: number): Promise<User> {
+    return this.usersRepository.findOne({
+      where: { id: userId },
+      relations: ['organization'],
+    });
   }
 
   async findUserByEmail(email: string) {
