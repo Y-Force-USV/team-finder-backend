@@ -53,7 +53,7 @@ export class AuthService {
     return {
       accessToken: token,
       organizationName: user.organization.name,
-      organizationAdmin: user.name,
+      userName: user.name,
       organizationId: user.organization.id,
     };
   }
