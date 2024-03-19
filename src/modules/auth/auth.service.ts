@@ -55,6 +55,7 @@ export class AuthService {
       organizationName: user.organization.name,
       userName: user.name,
       organizationId: user.organization.id,
+      role: user.role,
     };
   }
 }
