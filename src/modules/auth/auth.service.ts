@@ -29,6 +29,10 @@ export class AuthService {
   }
 
   async createAdminAndOrg(data: CreateAdminAndOrgDto) {
+    const userExists = await this.usersService.findUserByEmail(data.email);
+    if (userExists) {
+      throw new UnauthorizedException('Email is already in use');
+    }
     const adminOrg = await this.usersService.createAdminAndOrg(data);
     if (!adminOrg) throw new UnauthorizedException('Invalid credentials');
 
@@ -37,6 +41,11 @@ export class AuthService {
   }
 
   async createEmployee(data: CreateEmployeeDto, organizationId: number) {
+    const userExists = await this.usersService.findUserByEmail(data.email);
+    if (userExists) {
+      throw new UnauthorizedException('Email is already in use');
+    }
+
     data.organizationId = organizationId;
     const employee = await this.usersService.createEmployee(data);
     if (!employee) throw new UnauthorizedException('Invalid credentials');
