@@ -37,7 +37,13 @@ export class AuthService {
     if (!adminOrg) throw new UnauthorizedException('Invalid credentials');
 
     const token = await this.generateJWT(adminOrg);
-    return { accesToken: token };
+    return {
+      accessToken: token,
+      userName: adminOrg.name,
+      organizationName: adminOrg.organization.name,
+      organizationId: adminOrg.organization.id,
+      role: adminOrg.role,
+    };
   }
 
   async createEmployee(data: CreateEmployeeDto, organizationId: number) {
@@ -51,7 +57,7 @@ export class AuthService {
     if (!employee) throw new UnauthorizedException('Invalid credentials');
 
     const token = await this.generateJWT(employee);
-    return { accesToken: token };
+    return { accessToken: token, userName: employee.name, role: employee.role };
   }
 
   async login(data: LoginAdminDto) {
