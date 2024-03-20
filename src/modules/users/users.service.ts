@@ -117,4 +117,16 @@ export class UsersService {
       relations: ['organization'],
     });
   }
+
+  async getEmployeesByOrganizationId(organizationId: number) {
+    const organization = await this.organizationsService.findOrganizationById(organizationId);
+    if (!organization) {
+      throw new NotFoundException(`Organization with ID ${organizationId} not found.`);
+    }
+
+    return this.usersRepository.find({
+      where: { organization },
+      relations: ['organization'],
+    });
+  }
 }

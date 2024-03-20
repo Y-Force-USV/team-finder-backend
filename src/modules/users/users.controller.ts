@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserRole } from './user.entity';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -19,5 +19,12 @@ export class UsersController {
   @HasRoles(UserRole.ADMIN)
   async updateUserRole(@Param('id') userId: number, @Body('role') newRole: UserRole) {
     return this.usersService.updateUserRole(userId, newRole);
+  }
+
+  @Get('organization/:organizationId/employees')
+  async getEmployeesByOrganizationId(
+    @Param('organizationId', ParseIntPipe) organizationId: number,
+  ) {
+    return this.usersService.getEmployeesByOrganizationId(organizationId);
   }
 }
